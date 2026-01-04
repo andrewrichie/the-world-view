@@ -30,23 +30,24 @@ themeToggle.addEventListener('click', () => {
 
 // ==================== COUNTRIES LOGIC ====================
 
-let allCountries = []; // Store full list for filtering
+let allCountries = [];
+const grid = document.getElementById('countries-grid');
 
-const grid = document.getElementById('countries-grid'); // Cache it once
+// Declare these EARLY so both listeners can use them
+const searchInput = document.getElementById('search-input');
+const regionFilter = document.getElementById('region-filter');
 
 async function fetchCountries() {
   grid.innerHTML = '<p class="text-center text-lg col-span-full">Loading countries...</p>';
 
   try {
     const response = await fetch('https://restcountries.com/v3.1/all?fields=name,capital,population,region,flags,borders');
-    if (!response.ok) throw new Error('API error');
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 
     const countries = await response.json();
 
-    // Sort alphabetically
     countries.sort((a, b) => a.name.common.localeCompare(b.name.common));
 
-    // SAVE the full list and render
     allCountries = countries;
     renderCountries(allCountries);
 
@@ -54,7 +55,8 @@ async function fetchCountries() {
     console.error('Fetch error:', error);
     grid.innerHTML = `
       <p class="text-center text-lg text-red-500 col-span-full">
-        Error loading countries: ${error.message}
+        Error loading countries: ${error.message}<br>
+        <small>Check console (F12) for details.</small>
       </p>
     `;
   }
@@ -66,7 +68,7 @@ function renderCountries(countriesToShow) {
     return;
   }
 
-  grid.innerHTML = ''; // Clear grid
+  grid.innerHTML = '';
 
   countriesToShow.forEach(country => {
     const card = document.createElement('div');
@@ -86,20 +88,49 @@ function renderCountries(countriesToShow) {
   });
 }
 
-// Search functionality
-const searchInput = document.getElementById('search-input');
-
-if (searchInput) {  // Safety check in case element not found
+// Search functionality (now uses properly declared variables)
+if (searchInput) {
   searchInput.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase().trim();
 
-    const filtered = allCountries.filter(country =>
-      country.name.common.toLowerCase().includes(query)
-    );
+    let filtered = allCountries;
+
+    const selectedRegion = regionFilter?.value || '';
+    if (selectedRegion) {
+      filtered = filtered.filter(country => country.region === selectedRegion);
+    }
+
+    if (query) {
+      filtered = filtered.filter(country =>
+        country.name.common.toLowerCase().includes(query)
+      );
+    }
 
     renderCountries(filtered);
   });
 }
 
-// Load countries when page is ready
+// Region filter functionality
+if (regionFilter) {
+  regionFilter.addEventListener('change', (e) => {
+    const selectedRegion = e.target.value;
+
+    let filtered = allCountries;
+
+    if (selectedRegion) {
+      filtered = filtered.filter(country => country.region === selectedRegion);
+    }
+
+    const currentQuery = searchInput?.value.toLowerCase().trim() || '';
+    if (currentQuery) {
+      filtered = filtered.filter(country =>
+        country.name.common.toLowerCase().includes(currentQuery)
+      );
+    }
+
+    renderCountries(filtered);
+  });
+}
+
+// Load countries on page ready
 document.addEventListener('DOMContentLoaded', fetchCountries);

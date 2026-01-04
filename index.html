@@ -34,11 +34,23 @@
       
       <main class="p-6">
         <div class="max-w-7xl mx-auto">
-          <input type="text" id="search-input" placeholder="Search for country..." 
-          class="w-full md:w-96 px-6 py-4 rounded-lg shadow-md bg-white dark:bg-gray-800 text-black dark:text-white
-          focus:outline-none focus:ring-2 focus:ring-black-500 transition-all" />
-          <div id="countries-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            
+          <div class="mb-8 flex flex-col md:flex-row gap-4">
+            <!-- my search -->
+            <input type="text" id="search-input" placeholder="Search for country..." 
+            class="w-full md:w-96 px-6 py-4 rounded-lg shadow-md bg-white dark:bg-gray-800 text-black dark:text-white
+            focus:outline-none focus:ring-2 focus:ring-black-500 transition-all" />
+            <!-- my region for filter -->
+            <select id="region-filter" class="w-full md:w-64 px-6 py-4 rounded-lg shadow-md bg-white 
+            dark:bg-gray-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black-500">
+                <option value="">All Region</option>
+                <option value="Africa">Africa</option>
+                <option value="America">America</option>
+                <option value="Asia">Asia</option>
+                <option value="Europe">Europe</option>
+                <option value="Oceania">Oceania</option>
+            </select>
+          </div>
+          <div id="countries-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">   
           </div>
         </div>
       
